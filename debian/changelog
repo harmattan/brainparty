@@ -1,0 +1,33 @@
+brainparty (0.5.91-2) fremantle; urgency=low
+
+  * Merge OGG music support patch from mikkov
+  * Depend on brainparty-data >= 0.5.91 which includes the OGG music
+  * Remove "-g" (debugging) from compiler flags and add -O2 (optimize)
+
+ -- Thomas Perl <thp@thpinfo.com>  Wed, 21 Apr 2010 19:59:37 +0200
+
+brainparty (0.5.91-1) fremantle; urgency=low
+
+  * New upstream version "brainparty0.591"
+
+ -- Thomas Perl <thp@thpinfo.com>  Wed, 21 Apr 2010 02:08:36 +0200
+
+brainparty (0.5-3) fremantle; urgency=low
+
+  * Add call to SDL_GLES_Quit() at end of application
+    (http://talk.maemo.org/showpost.php?p=607035&postcount=71)
+
+ -- Thomas Perl <thp@thpinfo.com>  Mon, 12 Apr 2010 22:22:25 +0200
+
+brainparty (0.5-2) fremantle; urgency=low
+
+  * Added bugtracker field to make the Extras promoter happy
+
+ -- Thomas Perl <thp@thpinfo.com>  Sat,  3 Apr 2010 21:03:14 +0200
+
+brainparty (0.5-1) fremantle; urgency=low
+
+  * Initial release.
+
+ -- Thomas Perl <thp@thpinfo.com>  Sat,  3 Apr 2010 18:27:17 +0200
+
