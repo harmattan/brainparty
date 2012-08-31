@@ -29,3 +29,14 @@
     Soundsnap's licence allows all use, commercial and non-commercial, as long as you
     do not "Resell or distribute the sounds 'as they are'. For example, you cannot download
     and sell them as part of a CD library."
+
+N900 and N950/N9 port/customizations (Maemo 5 / MeeGo 1.2 Harmattan):
+
+  Thomas Perl <m@thp.io>
+
+Additional files for the Harmattan port:
+
+  resources/large-icon.jpg
+  from http://talk.maemo.org/showpost.php?p=608393&postcount=83
+
+
