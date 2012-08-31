@@ -1,3 +1,20 @@
+brainparty (0.5.990) harmattan; urgency=low
+
+  * New squircle icon in Harmattan Icon Style
+  * Version change to satisfy Ovi Guidelines
+  * Block game engine and music on swipe-to-background
+
+ -- Thomas Perl <m@thp.io>  Fri, 31 Aug 2012 17:21:44 +0200
+
+brainparty (0.5.91-3) harmattan; urgency=low
+
+  * Build for MeeGo 1.2 Harmattan (N9)
+  * Remove SDL_gles dependency, now works with Harmattan's stock SDL
+  * Various cleanups
+  * Re-integrate brainparty-data into main package (for easy installation)
+
+ -- Thomas Perl <m@thp.io>  Sat, 24 Mar 2012 19:21:25 +0100
+
 brainparty (0.5.91-2) fremantle; urgency=low
 
   * Merge OGG music support patch from mikkov

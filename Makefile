@@ -12,7 +12,8 @@ ifeq ($(MACHINE),Darwin)
 	OSXCOMPAT = SDLMain.m
 else
 	INCLUDES = `sdl-config --cflags` -I/usr/X11R6/include
-	LIBS = `sdl-config --libs` -lGLES_CM -lSDL_gles -lSDL_mixer -lSDL_ttf -lSDL_gfx -lSDL_image 
+	LIBS = `sdl-config --libs`
+	LIBS += -lEGL -lGLES_CM -lSDL_mixer -lSDL_ttf -lSDL_image
 	CXXFLAGS = -O2 -c -Wno-deprecated
 	OSXCOMPAT = 
 endif

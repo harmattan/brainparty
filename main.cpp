@@ -18,7 +18,6 @@
 #include <unistd.h>
 #include "SDL.h"
 
-#include <SDL_gles.h>
 #include <GLES/gl.h>
 
 #include "SDL_mixer.h" 
@@ -46,15 +45,9 @@ int main(int argc, char *argv[]) {
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048);
 	TTF_Init();
 
-        SDL_GLES_Init(SDL_GLES_VERSION_1_1);
-	
- 	SDL_Surface* screen = SDL_SetVideoMode(0, 0, 16, SDL_SWSURFACE | SDL_FULLSCREEN);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+	SDL_Surface* screen = SDL_SetVideoMode(0, 0, 0, SDL_OPENGLES | SDL_FULLSCREEN);
         SDL_ShowCursor(0);
-
-        SDL_GLES_Context *context;
-
-        context = SDL_GLES_CreateContext();
-        SDL_GLES_MakeCurrent(context);
 
 	// clear the screen
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,7 +87,7 @@ int main(int argc, char *argv[]) {
 	tex_splash->Draw(0, 0);
 
 	// ...update the screen
-	SDL_GLES_SwapBuffers();
+	SDL_GL_SwapBuffers();
 	
 	// and flush out any SDL events that are waiting - this makes the window activate
 	SDL_Event event;
@@ -123,6 +116,27 @@ int main(int argc, char *argv[]) {
 		
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
+                                case SDL_ACTIVEEVENT:
+                                    /* Pause music and gameplay on swipe */
+                                    if (!event.active.gain) {
+                                        Mix_PauseMusic();
+                                        /**
+                                         * Blocking wait for events and consume
+                                         * all until we are either re-activated
+                                         * or the app is closed.
+                                         **/
+                                        while (event.type != SDL_ACTIVEEVENT ||
+                                                !event.active.gain) {
+                                            SDL_WaitEvent(&event);
+
+                                            if (event.type == SDL_QUIT) {
+                                                exit(0);
+                                            }
+                                        }
+                                        Mix_ResumeMusic();
+                                        continue;
+                                    }
+                                    break;
 				case SDL_MOUSEBUTTONDOWN:
 					mouse_down = true;
 					Game->TouchStart(event.button.x, event.button.y);
@@ -163,13 +177,10 @@ int main(int argc, char *argv[]) {
 		seconds_elapsed = ticks_elapsed / 1000.0f;
 		Game->Update(seconds_elapsed);
 		Game->Draw();
-		SDL_GLES_SwapBuffers();
+		SDL_GL_SwapBuffers();
 	}
 	
 	delete Game;
-
-        SDL_GLES_DeleteContext(context);
-        SDL_GLES_Quit();
 
 	TTF_Quit();
 	Mix_CloseAudio();

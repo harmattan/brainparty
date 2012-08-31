@@ -1,15 +1,15 @@
 Source: brainparty
 Section: user/games
 Priority: extra
-Maintainer: Thomas Perl <thp@thpinfo.com>
-Build-Depends: debhelper (>= 5), libsdl-gles1.2-dev, libsdl-ttf2.0-dev, libsdl-mixeroggwav1.2-dev, libsdl-image1.2-dev, libsdl-gfx1.2-dev, libsdl1.2-dev, libgles1-sgx-img-dev
+Maintainer: Thomas Perl <m@thp.io>
+Build-Depends: debhelper (>= 5), libsdl-ttf2.0-dev, libsdl-image1.2-dev, libsdl1.2-dev, libgles1-sgx-img-dev, libsdl-mixer1.2-dev
 Standards-Version: 3.7.2
 XSB-Homepage: http://tuxradar.com/brainparty
-XSBC-Bugtracker: mailto:thp@thpinfo.com
+XSBC-Bugtracker: mailto:m@thp.io
 
 Package: brainparty
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, brainparty-data (>= 0.5.91), libgles1-sgx-img, libvorbisidec1
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgles1-sgx-img, libvorbisidec1
 Description: A puzzle game to tease your brain
  Brain Party is a fun, free puzzle game for all the
  family that's made up of 36 minigames designed to

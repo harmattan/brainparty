@@ -25,7 +25,6 @@
 #include <unistd.h>
 #include "SDL.h"
 
-#include <SDL_gles.h>
 #include <GLES/gl.h>
 
 #include "Colour.h"

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Brain Party
-Exec=/opt/brainparty/brainparty
-Icon=brainparty
+Exec=invoker --single-instance --type=e /opt/brainparty/brainparty
+Icon=/opt/brainparty/brainparty.png
 Terminal=false
 Type=Application
 Categories=Game;LogicGame;

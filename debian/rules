@@ -42,8 +42,10 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	install -D -m755 brainparty $(CURDIR)/debian/brainparty/opt/brainparty/brainparty
-	install -D -m644 brainparty.desktop $(CURDIR)/debian/brainparty/usr/share/applications/hildon/brainparty.desktop
-	install -D -m644 brainparty.png $(CURDIR)/debian/brainparty/usr/share/icons/hicolor/scalable/hildon/brainparty.png
+	install -D -m644 brainparty.png $(CURDIR)/debian/brainparty/opt/brainparty/brainparty.png
+	install -D -m644 brainparty.desktop $(CURDIR)/debian/brainparty/usr/share/applications/brainparty.desktop
+	mkdir -p $(CURDIR)/debian/brainparty/opt/brainparty/Content/
+	cp Content/* $(CURDIR)/debian/brainparty/opt/brainparty/Content/
 
 binary-indep: build install
 
