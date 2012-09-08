@@ -134,6 +134,14 @@ int main(int argc, char *argv[]) {
                                             }
                                         }
                                         Mix_ResumeMusic();
+
+                                        /**
+                                         * Reset the time counter to pause the
+                                         * time-based minigames' countdowns
+                                         **/
+                                        new_time = SDL_GetTicks();
+                                        ticks_elapsed = 0;
+                                        previous_time = new_time;
                                         continue;
                                     }
                                     break;

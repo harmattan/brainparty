@@ -1,3 +1,9 @@
+brainparty (0.5.991) harmattan; urgency=low
+
+  * Pause timer on swipe for time-based mini-games
+
+ -- Thomas Perl <m@thp.io>  Sat, 08 Sep 2012 18:31:47 +0200
+
 brainparty (0.5.990) harmattan; urgency=low
 
   * New squircle icon in Harmattan Icon Style
