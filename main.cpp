@@ -19,6 +19,8 @@
 #include "SDL.h"
 
 #include <GLES/gl.h>
+#include <audioresource.h>
+#include <glib.h>
 
 #include "SDL_mixer.h" 
 #include "SDL_ttf.h" 
@@ -26,28 +28,57 @@
 #include "BPGame.h"
 
 BPGame* Game;
+bool mix_opened = false;
+const char *last_music = NULL;
+gchar *appname = NULL;
+
+void
+bp_game_audio_set_last_music(const char *music)
+{
+	last_music = music;
+}
+
+	void
+on_audio_resource_acquired(audioresource_t *audio_resource, bool acquired, void *user_data)
+{
+	if (acquired && !mix_opened) {
+		Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048);
+		mix_opened = true;
+		if (Game && last_music != NULL) {
+			Game->PlayMusic(last_music);
+		}
+	} else if (!acquired && mix_opened) {
+		Mix_CloseAudio();
+		mix_opened = false;
+	}
+}
 
 int main(int argc, char *argv[]) {
+	appname = g_path_get_basename(argv[0]);
+
 	if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 ) {
 		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
-	
-	// init all the SDL stuff
-        /*putenv((char*)"SDL_VIDEO_WINDOW_POS");
-	putenv((char*)"SDL_VIDEO_CENTERED=1");
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);*/
-		
-	SDL_WM_SetCaption("Brain Party", "Brain Party");
-	SDL_WM_SetIcon(SDL_LoadBMP("/opt/brainparty/Content/icon.bmp"), NULL);
-	
-	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048);
+	audioresource_t *audiores = audioresource_init(AUDIO_RESOURCE_GAME, on_audio_resource_acquired, NULL);
+
+	audioresource_acquire(audiores);
+	while (!mix_opened) {
+		g_main_context_iteration(NULL, false);
+	}
+
 	TTF_Init();
 
+	SDL_Window *window = SDL_CreateWindow("Brain Party",
+			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 540, 960,
+			SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+	int width, height;
+	SDL_GetWindowSize(window, &width, &height);
+
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-	SDL_Surface* screen = SDL_SetVideoMode(0, 0, 0, SDL_OPENGLES | SDL_FULLSCREEN);
-        SDL_ShowCursor(0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 
 	// clear the screen
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -57,7 +88,7 @@ int main(int argc, char *argv[]) {
 	Texture* tex_splash = new Texture("hudzillagames", 320, 480);
 
 	// set up all the OpenGL stuff
-	glViewport(0, 0, 800, 480);
+	glViewport(0, 0, width, height);
 	
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -72,12 +103,6 @@ int main(int argc, char *argv[]) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-        /**
-         * Rotate by 90 degrees, scale to fullscreen, keep
-         * aspect ratio and center on screen (see also the
-         * ConvertCoordinates function in BPGame.h).
-         **/
-        glRotatef(90, 0, 0, 1);
 	glOrthof(0, 320, 506, -26, -100.0f, 100.0f);
 	
 	glMatrixMode(GL_MODELVIEW);
@@ -87,7 +112,7 @@ int main(int argc, char *argv[]) {
 	tex_splash->Draw(0, 0);
 
 	// ...update the screen
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(window);
 	
 	// and flush out any SDL events that are waiting - this makes the window activate
 	SDL_Event event;
@@ -95,7 +120,7 @@ int main(int argc, char *argv[]) {
 	
 	// load all the game data
 	Game = new BPGame();
-	Game->Init(320, 480);
+	Game->Init(width, height);
 	
 	// finally sleep for a second so the splash screen is visible
 	SDL_Delay(1000);
@@ -116,35 +141,49 @@ int main(int argc, char *argv[]) {
 		
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-                                case SDL_ACTIVEEVENT:
-                                    /* Pause music and gameplay on swipe */
-                                    if (!event.active.gain) {
-                                        Mix_PauseMusic();
-                                        /**
-                                         * Blocking wait for events and consume
-                                         * all until we are either re-activated
-                                         * or the app is closed.
-                                         **/
-                                        while (event.type != SDL_ACTIVEEVENT ||
-                                                !event.active.gain) {
-                                            SDL_WaitEvent(&event);
+				case SDL_WINDOWEVENT:
+					if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+						audioresource_release(audiores);
+						while (mix_opened) {
+							g_main_context_iteration(NULL, false);
+						}
 
-                                            if (event.type == SDL_QUIT) {
-                                                exit(0);
-                                            }
-                                        }
-                                        Mix_ResumeMusic();
+						// Could render paused state here
 
-                                        /**
-                                         * Reset the time counter to pause the
-                                         * time-based minigames' countdowns
-                                         **/
-                                        new_time = SDL_GetTicks();
-                                        ticks_elapsed = 0;
-                                        previous_time = new_time;
-                                        continue;
-                                    }
-                                    break;
+						while (SDL_WaitEvent(&event)) {
+							if (event.type == SDL_QUIT) {
+								exit(0);
+							} else if (event.type == SDL_WINDOWEVENT) {
+								if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
+									audioresource_acquire(audiores);
+									while (!mix_opened) {
+										g_main_context_iteration(NULL, false);
+									}
+
+									/**
+									 * Reset the time counter to pause the
+									 * time-based minigames' countdowns
+									 **/
+									new_time = SDL_GetTicks();
+									ticks_elapsed = 0;
+									previous_time = new_time;
+									break;
+								}
+							}
+						}
+					}
+					break;
+				case SDL_FINGERDOWN:
+					mouse_down = true;
+					Game->TouchStart(event.tfinger.x, event.tfinger.y);
+					break;
+				case SDL_FINGERUP:
+					mouse_down = false;
+					Game->TouchStop(event.tfinger.x, event.tfinger.y);
+					break;
+				case SDL_FINGERMOTION:
+					if (mouse_down) Game->TouchDrag(event.tfinger.x, event.tfinger.y);
+					break;
 				case SDL_MOUSEBUTTONDOWN:
 					mouse_down = true;
 					Game->TouchStart(event.button.x, event.button.y);
@@ -185,13 +224,17 @@ int main(int argc, char *argv[]) {
 		seconds_elapsed = ticks_elapsed / 1000.0f;
 		Game->Update(seconds_elapsed);
 		Game->Draw();
-		SDL_GL_SwapBuffers();
+		SDL_GL_SwapWindow(window);
+		// To receive audio resource events
+		g_main_context_iteration(NULL, false);
 	}
 	
 	delete Game;
 
 	TTF_Quit();
-	Mix_CloseAudio();
+
+	SDL_GL_DeleteContext(gl_context);
+	SDL_DestroyWindow(window);
 
 	SDL_Quit();
 

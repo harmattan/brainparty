@@ -17,6 +17,7 @@
 
 #include "Texture.h"
 #include "SDL_image.h"
+#include "location.h"
 
 Texture::Texture(SDL_Surface* surface) {	
 	int po2width = Texture::NextPO2(surface->w);
@@ -37,7 +38,6 @@ Texture::Texture(SDL_Surface* surface) {
 		#endif		
 		);
 		
-		SDL_SetAlpha(surface, 0, 0);	
 		SDL_BlitSurface(surface, NULL, tmpsurface, NULL);
 		InitWithSurface(tmpsurface, surface->w, surface->h);
 		SDL_FreeSurface(tmpsurface);		
@@ -48,7 +48,7 @@ Texture::Texture(SDL_Surface* surface) {
 
 Texture::Texture(const char* filename, float actualwidth, float actualheight) {
 	string file = filename;
-	file.insert(0, "/opt/brainparty/Content/");
+	file.insert(0, DATA_DIR);
 	file.append(".png");
 
 	SDL_Surface *surface = IMG_Load(file.c_str());

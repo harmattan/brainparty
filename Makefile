@@ -1,33 +1,21 @@
-MACHINE= $(shell uname -s)
+TARGET := brainparty
+
 OBJFILES := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 
-ifeq ($(MACHINE),Darwin)
-	INCLUDES = -I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers -I/Library/Frameworks/SDL_mixer.framework/Headers -I/Library/Frameworks/SDL_ttf.framework/Headers -I/System/Library/Frameworks/OpenGL.framework/Headers
-	LIBS = -m32 -framework SDL -framework SDL_image -framework SDL_mixer -framework SDL_ttf -framework Cocoa -framework OpenGL
+PKGS := sdl2 SDL2_mixer SDL2_ttf SDL2_image audioresource egl glesv1_cm glib-2.0
 
-	# SDL isn't in a great state on 64-bit Macs, so force 32-bit for now
-	CXXFLAGS = -g -c -m32 -Wno-deprecated
+CXXFLAGS += $(shell pkg-config --cflags $(PKGS))
+LIBS += $(shell pkg-config --libs $(PKGS))
 
-	# to compile on OS X you need to include this Objective C file
-	OSXCOMPAT = SDLMain.m
-else
-	INCLUDES = `sdl-config --cflags` -I/usr/X11R6/include
-	LIBS = `sdl-config --libs`
-	LIBS += -lEGL -lGLES_CM -lSDL_mixer -lSDL_ttf -lSDL_image
-	CXXFLAGS = -O2 -c -Wno-deprecated
-	OSXCOMPAT = 
-endif
+CXXFLAGS += -O2 -c -Wno-deprecated
 
-# object files have corresponding source files
-CXX = g++
+all: $(TARGET)
 
-all: brainparty
-
-brainparty: $(OBJFILES)
-	$(CXX) -o brainparty $(INCLUDES) $(OSXCOMPAT) $(OBJFILES) $(LIBS)
+$(TARGET): $(OBJFILES)
+	$(CXX) -o $@ $(OBJFILES) $(LIBS)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 clean:
-	rm -f brainparty *.o
+	rm -f $(TARGET) $(OBJFILES)

@@ -19,6 +19,8 @@
 #include "BPGame.h"
 #include "SDL.h"
 
+#include "location.h"
+
 #include <GLES/gl.h>
 
 #include "SDL_ttf.h" 
@@ -68,7 +70,14 @@ bool BPGame::ShowingClearScores;
 SpriteFont* BPGame::sfcMessageBoxText;
 SpriteFont* BPGame::sfcMessageBoxTitle;
 
+// Implemented in main.cpp
+void
+bp_game_audio_set_last_music(const char *music);
+
 void BPGame::Init(int width, int height) {
+	this->width = width;
+	this->height = height;
+
 	srand(time(0));
 	
 	EnableSound = true;
@@ -1200,7 +1209,7 @@ void BPGame::AllocString(SpriteFont** tex, const char* str, FontSizes size, floa
 	SAFE_DELETE((*tex));
 	
 	// it's incredibly lazy to open and close the font each time - hurray!
-	TTF_Font* fnt = TTF_OpenFont("/opt/brainparty/Content/freesans.ttf", size - 3); // NB: the -3 is here because the freesans.ttf font we're using is a big chunkier than the iPhone font
+	TTF_Font* fnt = TTF_OpenFont(DATA_DIR "freesans.ttf", size - 3); // NB: the -3 is here because the freesans.ttf font we're using is a big chunkier than the iPhone font
 	
 	static SDL_Color white = { 255, 255, 255, 255 };
 	
@@ -1305,7 +1314,7 @@ void BPGame::LoadSettings() {
 	NumUnlockedGames = 0;
 
 	ifstream ifs;
-	ifs.open("/home/user/.brainparty");
+	ifs.open(bp_get_save_file_name());
 	
 	FirstRun = false;
 	
@@ -1435,8 +1444,8 @@ void BPGame::LoadSettings() {
 }
 
 void BPGame::SaveSettings() {
- 	ofstream savefile;
- 	savefile.open("/home/user/.brainparty");
+	ofstream savefile;
+	savefile.open(bp_get_save_file_name());
 	savefile << EnableSound << endl;
 	savefile << EnableMusic << endl;
 	savefile << endl;
@@ -2347,9 +2356,11 @@ void BPGame::PlayMusic(const char* name) {
 		Mix_FreeMusic(Music);
 		Music = NULL;
 	}
+
+	bp_game_audio_set_last_music(name);
 	
 	string* file = new string(name);
-	file->insert(0, "/opt/brainparty/Content/");
+	file->insert(0, DATA_DIR);
 	file->append(".ogg");
 	
 	Music = Mix_LoadMUS(file->c_str());
@@ -2359,6 +2370,8 @@ void BPGame::PlayMusic(const char* name) {
 }
 
 void BPGame::StopMusic() {
+	bp_game_audio_set_last_music(NULL);
+
 	if (Music != NULL) {
 		Mix_HaltMusic();
 		Mix_FreeMusic(Music);
@@ -2376,7 +2389,7 @@ bool BPGame::FileExists(const char * filename) {
 
 Mix_Chunk* BPGame::LoadSound(const char* filename, const char* extension) {
 	string* file = new string(filename);
-	file->insert(0, "/opt/brainparty/Content/");
+	file->insert(0, DATA_DIR);
 	file->append(".wav");
 	
 	Mix_Chunk* retval = Mix_LoadWAV(file->c_str());

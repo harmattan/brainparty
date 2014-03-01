@@ -61,6 +61,9 @@ struct cmp_str {
 };
 
 class BPGame {
+private:
+	int width;
+	int height;
 public:
     	int GLViewRenderbuffer;
 	int GLViewFramebuffer;
@@ -206,29 +209,33 @@ public:
         inline void ConvertCoordinates(float &x, float &y) {
             /**
              * This converts the physical (screen) coordinates to the
-             * game world coordinates. We've rotated the screen by 90
-             * degrees, and the resolution is also different. We then
-             * center the scaled image on the screen (the "-26"). The
+             * game world coordinates.
+             * We center the scaled image on the screen (the "-26"). The
              * "1.666/1.6" is here, because the screen has a ratio of
-             * 480/800 and the world 480/320.
+             * 800/480 (or a similar ratio) and the world is 480/320.
              *
              *   world:      screen:
-             *   a--b        b--d
+             *   a--b        a--b
              *   |  |        |  |
-             *   c--d        a--c
-             *   320x480     800x480
+             *   c--d        c--d
+             *   320x480     width x height
              *
              * The world is centered on the screen, so the world takes
-             * up 720 pixels height on the screen - 40 pixels are black
+             * up ... pixels height on the screen - .. pixels are black
              * border at the top (screen: left) and bottom (screen: right).
              *
-             * These 40 pixels are ~ 26 pixels in world coordinates:
+             * These .. pixels are ~ 26 pixels in world coordinates:
              *   offset_in_world = (40 * 480 / 800) * 1.666 / 1.5
+             *
+             * TODO: Rewrite all this into a separate class that deals with
+             * input projection as well as GL viewport/projection setup.
              **/
-            float tmp = (480.-y)*320./480.;
-            y = ((x*480./800.)*1.666/1.5)-26;
-            x = tmp;
+            float xx = x / width * 320.;
+            float yy = ((y / height * 480.)*1.666/1.5)-26;
+            x = xx;
+            y = yy;
         }
+
 	void TouchStart(float x, float y);
 	void TouchStop(float x, float y);
 	void TouchDrag(float x, float y);
