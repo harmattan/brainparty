@@ -17,39 +17,10 @@
 
 #include <unistd.h>
 
-#if defined(HAVE_AUDIORESOURCE)
-#include <audioresource.h>
-#endif
-
 #include "BPGame.h"
 #include "Location.h"
+#include "Audio.h"
 
-BPGame* Game;
-bool mix_opened = false;
-const char *last_music = NULL;
-
-void
-bp_game_audio_set_last_music(const char *music)
-{
-	last_music = music;
-}
-
-#if defined(HAVE_AUDIORESOURCE)
-void
-on_audio_resource_acquired(audioresource_t *audio_resource, bool acquired, void *user_data)
-{
-	if (acquired && !mix_opened) {
-		Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048);
-		mix_opened = true;
-		if (Game && last_music != NULL) {
-			Game->PlayMusic(last_music);
-		}
-	} else if (!acquired && mix_opened) {
-		Mix_CloseAudio();
-		mix_opened = false;
-	}
-}
-#endif
 
 int main(int argc, char *argv[]) {
 	bp_init_location(argc, argv);
@@ -59,14 +30,8 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-#if defined(HAVE_AUDIORESOURCE)
-	audioresource_t *audiores = audioresource_init(AUDIO_RESOURCE_GAME, on_audio_resource_acquired, NULL);
-
-	audioresource_acquire(audiores);
-	while (!mix_opened) {
-		g_main_context_iteration(NULL, false);
-	}
-#endif
+	Audio audio;
+	audio.start();
 
 	TTF_Init();
 
@@ -119,7 +84,7 @@ int main(int argc, char *argv[]) {
 	while (SDL_PollEvent(&event)) { }
 	
 	// load all the game data
-	Game = new BPGame();
+	BPGame *Game = new BPGame();
 	Game->Init(width, height);
 	
 	// finally sleep for a second so the splash screen is visible
@@ -143,12 +108,7 @@ int main(int argc, char *argv[]) {
 			switch (event.type) {
 				case SDL_WINDOWEVENT:
 					if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
-#if defined(HAVE_AUDIORESOURCE)
-						audioresource_release(audiores);
-						while (mix_opened) {
-							g_main_context_iteration(NULL, false);
-						}
-#endif
+						audio.stop();
 
 						// Could render paused state here
 
@@ -157,12 +117,7 @@ int main(int argc, char *argv[]) {
 								exit(0);
 							} else if (event.type == SDL_WINDOWEVENT) {
 								if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
-#if defined(HAVE_AUDIORESOURCE)
-									audioresource_acquire(audiores);
-									while (!mix_opened) {
-										g_main_context_iteration(NULL, false);
-									}
-#endif
+									audio.start();
 
 									/**
 									 * Reset the time counter to pause the

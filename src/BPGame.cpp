@@ -19,6 +19,7 @@
 #include "BPGame.h"
 
 #include "Location.h"
+#include "Audio.h"
 
 #include <string>
 
@@ -65,10 +66,6 @@ bool BPGame::ShowingMessageBox;
 bool BPGame::ShowingClearScores;
 SpriteFont* BPGame::sfcMessageBoxText;
 SpriteFont* BPGame::sfcMessageBoxTitle;
-
-// Implemented in main.cpp
-void
-bp_game_audio_set_last_music(const char *music);
 
 void BPGame::Init(int width, int height) {
 	this->width = width;
@@ -2354,7 +2351,7 @@ void BPGame::PlayMusic(const char* name) {
 		Music = NULL;
 	}
 
-	bp_game_audio_set_last_music(name);
+        Audio::set_last_music(this, name);
 	
         std::string fn(bp_get_data_file(std::string(name) + ".ogg"));
 	Music = Mix_LoadMUS(fn.c_str());
@@ -2362,7 +2359,7 @@ void BPGame::PlayMusic(const char* name) {
 }
 
 void BPGame::StopMusic() {
-	bp_game_audio_set_last_music(NULL);
+        Audio::set_last_music(this, NULL);
 
 	if (Music != NULL) {
 		Mix_HaltMusic();
