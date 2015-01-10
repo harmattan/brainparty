@@ -16,8 +16,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Texture.h"
-#include "SDL_image.h"
-#include "location.h"
+
+#include "Location.h"
 
 Texture::Texture(SDL_Surface* surface) {	
 	int po2width = Texture::NextPO2(surface->w);
@@ -47,13 +47,11 @@ Texture::Texture(SDL_Surface* surface) {
 }
 
 Texture::Texture(const char* filename, float actualwidth, float actualheight) {
-	string file = filename;
-	file.insert(0, DATA_DIR);
-	file.append(".png");
+        std::string fn(bp_get_data_file(std::string(filename) + ".png"));
 
-	SDL_Surface *surface = IMG_Load(file.c_str());
-	if ((surface->w & (surface->w - 1)) != 0) printf("warning: %s's width is not a power of 2\n", file.c_str());
-	if ((surface->h & (surface->h - 1)) != 0) printf("warning: %s's height is not a power of 2\n", file.c_str());
+	SDL_Surface *surface = IMG_Load(fn.c_str());
+	if ((surface->w & (surface->w - 1)) != 0) printf("warning: %s's width is not a power of 2\n", fn.c_str());
+	if ((surface->h & (surface->h - 1)) != 0) printf("warning: %s's height is not a power of 2\n", fn.c_str());
 	
 	InitWithSurface(surface, actualwidth, actualheight);
 	

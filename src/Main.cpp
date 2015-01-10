@@ -16,21 +16,17 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <unistd.h>
-#include "SDL.h"
 
-#include <GLES/gl.h>
+#if defined(HAVE_AUDIORESOURCE)
 #include <audioresource.h>
-#include <glib.h>
-
-#include "SDL_mixer.h" 
-#include "SDL_ttf.h" 
+#endif
 
 #include "BPGame.h"
+#include "Location.h"
 
 BPGame* Game;
 bool mix_opened = false;
 const char *last_music = NULL;
-gchar *appname = NULL;
 
 void
 bp_game_audio_set_last_music(const char *music)
@@ -38,7 +34,8 @@ bp_game_audio_set_last_music(const char *music)
 	last_music = music;
 }
 
-	void
+#if defined(HAVE_AUDIORESOURCE)
+void
 on_audio_resource_acquired(audioresource_t *audio_resource, bool acquired, void *user_data)
 {
 	if (acquired && !mix_opened) {
@@ -52,27 +49,30 @@ on_audio_resource_acquired(audioresource_t *audio_resource, bool acquired, void 
 		mix_opened = false;
 	}
 }
+#endif
 
 int main(int argc, char *argv[]) {
-	appname = g_path_get_basename(argv[0]);
+	bp_init_location(argc, argv);
 
 	if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 ) {
 		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
 
+#if defined(HAVE_AUDIORESOURCE)
 	audioresource_t *audiores = audioresource_init(AUDIO_RESOURCE_GAME, on_audio_resource_acquired, NULL);
 
 	audioresource_acquire(audiores);
 	while (!mix_opened) {
 		g_main_context_iteration(NULL, false);
 	}
+#endif
 
 	TTF_Init();
 
 	SDL_Window *window = SDL_CreateWindow("Brain Party",
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 540, 960,
-			SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+			SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);// | SDL_WINDOW_FULLSCREEN);
 	int width, height;
 	SDL_GetWindowSize(window, &width, &height);
 
@@ -143,10 +143,12 @@ int main(int argc, char *argv[]) {
 			switch (event.type) {
 				case SDL_WINDOWEVENT:
 					if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+#if defined(HAVE_AUDIORESOURCE)
 						audioresource_release(audiores);
 						while (mix_opened) {
 							g_main_context_iteration(NULL, false);
 						}
+#endif
 
 						// Could render paused state here
 
@@ -155,10 +157,12 @@ int main(int argc, char *argv[]) {
 								exit(0);
 							} else if (event.type == SDL_WINDOWEVENT) {
 								if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
+#if defined(HAVE_AUDIORESOURCE)
 									audioresource_acquire(audiores);
 									while (!mix_opened) {
 										g_main_context_iteration(NULL, false);
 									}
+#endif
 
 									/**
 									 * Reset the time counter to pause the

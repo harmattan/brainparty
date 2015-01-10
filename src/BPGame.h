@@ -29,11 +29,7 @@
 #include <fstream>
 #include <sstream> 
 
-#include "SDL.h"
-
-#include <GLES/gl.h>
-
-#include "SDL_mixer.h"
+#include "Config.h"
 
 #include "Texture.h"
 #include "Colour.h"

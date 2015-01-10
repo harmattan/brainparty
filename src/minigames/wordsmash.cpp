@@ -17,7 +17,7 @@
 
 #include "wordsmash.h"
 #include "Minigame.h"
-#include "location.h"
+#include "Location.h"
 
 BPMiniGame_WordSmash::BPMiniGame_WordSmash(BPGame* game) : BPMiniGame(game) {
 	TheGame = game;
@@ -61,7 +61,7 @@ BPMiniGame_WordSmash::BPMiniGame_WordSmash(BPGame* game) : BPMiniGame(game) {
 	sfcLetters["y"] = TheGame->LoadBitmap("y", 44, 44);
 	sfcLetters["z"] = TheGame->LoadBitmap("z", 44, 44);
 	
-	Words = new WordList(DATA_DIR "wordlist.txt");
+	Words = new WordList(bp_get_data_file("wordlist.txt"));
 	
 	for (int j = 0; j < RowCount; ++j) {
 		vector<BPMiniGame_WordSmash_Letter*>* row = new vector<BPMiniGame_WordSmash_Letter*>();

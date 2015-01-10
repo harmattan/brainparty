@@ -1,9 +1,9 @@
 Name: harbour-brainparty
-Version: 0.5.992
+Version: 1.0.0
 Release: 1
 Summary: A puzzle game to tease your brain
 Group: Games
-License: Proprietary
+License: GPL
 Url: http://thp.io/2012/brainparty/
 Source: %{name}-%{version}.tar.bz2
 BuildRequires: pkgconfig(sdl2)
@@ -24,15 +24,10 @@ mathematics, reaction time and more!
 %setup -q
 
 %build
-make clean
-make
+make clean all DESTDIR=%{buildroot} TARGET=%{name} PLATFORM=sailfish
 
 %install
-install -D brainparty %{buildroot}%{_bindir}/%{name}
-install -D -m644 brainparty.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
-install -D -m644 brainparty.png %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/%{name}.png
-mkdir -p %{buildroot}%{_datadir}/%{name}/
-cp -rv Content/* %{buildroot}%{_datadir}/%{name}/
+make install DESTDIR=%{buildroot} TARGET=%{name} PLATFORM=sailfish
 
 %files
 %defattr(-,root,root,-)

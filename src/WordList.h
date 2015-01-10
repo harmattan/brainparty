@@ -42,11 +42,11 @@ private:
 	string_hash_set Words;
 
 public:
-	WordList(const char* file) {
+	WordList(const std::string &file) {
 		FILE *fp;
 		char filebuffer[255];
 		
-		if ((fp = fopen(file, "r")) != NULL) {
+		if ((fp = fopen(file.c_str(), "r")) != NULL) {
 			
 			while(!feof(fp)) {
 				fgets(filebuffer, 255, fp);

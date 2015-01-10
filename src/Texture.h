@@ -21,11 +21,9 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-
 #include <unistd.h>
-#include "SDL.h"
 
-#include <GLES/gl.h>
+#include "Config.h"
 
 #include "Colour.h"
 
