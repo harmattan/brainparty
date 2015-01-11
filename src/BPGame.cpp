@@ -838,8 +838,10 @@ void BPGame::DrawImage(Texture* tex, float x, float y, float rotation, float sca
 }
 
 void BPGame::Clear(Colour* col) {
+	glDisable(GL_SCISSOR_TEST);
 	glClearColor(col->R, col->G, col->B, col->A);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glEnable(GL_SCISSOR_TEST);
 }
 
 bool BPGame::PointOverRect(int x1, int y1, int x2, int y2, int width, int height) {

@@ -16,7 +16,7 @@ public:
     void set_last_music(BPGame *game, const char *last_music);
     void on_acquired(bool acquired);
 
-private:
+protected:
     BPGame *game;
     const char *last_music;
     bool mix_opened;
