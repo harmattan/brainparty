@@ -20,6 +20,7 @@
 #include "BPGame.h"
 #include "Location.h"
 #include "Audio.h"
+#include "Projection.h"
 
 
 int main(int argc, char *argv[]) {
@@ -65,10 +66,8 @@ int main(int argc, char *argv[]) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glOrthof(0, 320, 506, -26, -100.0f, 100.0f);
+	Projection projection;
+	projection.setup(width, height);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -85,6 +84,7 @@ int main(int argc, char *argv[]) {
 	
 	// load all the game data
 	BPGame *Game = new BPGame();
+	Game->GLProjection = &projection;
 	Game->Init(width, height);
 	
 	// finally sleep for a second so the splash screen is visible

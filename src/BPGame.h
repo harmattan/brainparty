@@ -41,6 +41,7 @@
 #include "TestResultContainer.h"
 #include "SpriteFont.h"
 #include "BGObject.h"
+#include "Projection.h"
 
 enum GameStates { FIRST_RUN, MAIN_MENU, ABOUT, PLAY_MENU, PRACTISE_MENU, PLAYING, TEST_STATUS, TEST_RESULTS, PROFESSOR, OPTIONS, HELP, HISTORY, CREDITS, STORE, BRAINBOOST, MARATHON, MAIN_MENU_PLAY, PLAY_MAIN_MENU, PLAY_PRACTISE, PRACTISE_PLAY, PLAY_HISTORY, HISTORY_CREDITS, CREDITS_HISTORY, HISTORY_PLAY, TEST_RESULTS_PLAY, PRACTISE_PROFESSOR, MAIN_MENU_OPTIONS, OPTIONS_MAIN_MENU, MAIN_MENU_HELP, HELP_MAIN_MENU, DO_QUIT };
 enum MiniGameType { BALLOONBLASTER, BOMBHUNT, BPSAYS, BUBBLETROUBLE, CARDMATCH, CONNEX, CUPSNBALLS, DICEOFF, FLASHCOUNTING, FLASHLIGHT, IQTEST, JEWELFLIP, JEWELJAM, MARBLEDROP, MEMORYBLOX, MEMORYBOX, MEMORYMATHS, MINESWEEP, MOONJUMP, NEXTINLINE, NUMBERSNAKE, ODDONEOUT, PATCHMATCH, PERFECTPATHS, ROUTEFINDER, RPS, SCRAMBLED, SETFINDER, SHARPSHOOTER, SHORTCIRCUITSUDOKU, SHUFFLEPUZZLER, STRANGERDANGER, SYMBOLICLOGIC, UNDERTHEHAT, UNTANGLER, WORDSMASH };
@@ -201,36 +202,8 @@ public:
 	const char* TestBrainJob;
 	
 	float Acceleration[3];
-		
-        inline void ConvertCoordinates(float &x, float &y) {
-            /**
-             * This converts the physical (screen) coordinates to the
-             * game world coordinates.
-             * We center the scaled image on the screen (the "-26"). The
-             * "1.666/1.6" is here, because the screen has a ratio of
-             * 800/480 (or a similar ratio) and the world is 480/320.
-             *
-             *   world:      screen:
-             *   a--b        a--b
-             *   |  |        |  |
-             *   c--d        c--d
-             *   320x480     width x height
-             *
-             * The world is centered on the screen, so the world takes
-             * up ... pixels height on the screen - .. pixels are black
-             * border at the top (screen: left) and bottom (screen: right).
-             *
-             * These .. pixels are ~ 26 pixels in world coordinates:
-             *   offset_in_world = (40 * 480 / 800) * 1.666 / 1.5
-             *
-             * TODO: Rewrite all this into a separate class that deals with
-             * input projection as well as GL viewport/projection setup.
-             **/
-            float xx = x / width * 320.;
-            float yy = ((y / height * 480.)*1.666/1.5)-26;
-            x = xx;
-            y = yy;
-        }
+
+	Projection *GLProjection;
 
 	void TouchStart(float x, float y);
 	void TouchStop(float x, float y);

@@ -866,7 +866,7 @@ void BPGame::TouchStart(float x, float y) {
 		return;
 	}
 	
-        ConvertCoordinates(x, y);
+	GLProjection->map(x, y);
 	TouchEvent.X = x;
 	TouchEvent.Y = y;
 
@@ -887,7 +887,7 @@ void BPGame::TouchStop(float x, float y) {
 		return;
 	}
 
-        ConvertCoordinates(x, y);
+	GLProjection->map(x, y);
 	TouchEvent.X = x;
 	TouchEvent.Y = y;
 	
@@ -1168,7 +1168,7 @@ void BPGame::TouchDrag(float x, float y) {
 		return;
 	}
 	
-        ConvertCoordinates(x, y);
+	GLProjection->map(x, y);
 	TouchEvent.X = x;
 	TouchEvent.Y = y;
 
