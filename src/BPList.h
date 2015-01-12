@@ -138,7 +138,7 @@ public:
 	~BPPList();
 	void Add(T item);
 	bool Contains(T item);
-	void Clear(bool safe_delete);
+	void Clear(bool safe_delete=true);
 	int IndexOf(T item);
 	void Insert(int pos, T item);
 	void Remove(T item);
@@ -171,7 +171,7 @@ bool BPPList<T>::Contains(T item) {
 }
 
 template <class T>
-void BPPList<T>::Clear(bool safe_delete = true) {
+void BPPList<T>::Clear(bool safe_delete) {
 	if (safe_delete) {
 		for (int i = data.size() - 1; i >= 0; --i) {
 			T item = data[i];
