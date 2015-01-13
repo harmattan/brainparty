@@ -7,5 +7,5 @@ install: $(TARGET)
 	mkdir -p $(DESTDIR)$(PREFIX)/share/$(TARGET)/
 	cp -rpv Content/* $(DESTDIR)$(PREFIX)/share/$(TARGET)/
 	install -m644 -D platform/$(PLATFORM)/$(TARGET).desktop $(DESTDIR)$(PREFIX)/share/applications/$(TARGET).desktop
-	install -m644 -D platform/$(PLATFORM)/$(TARGET).png $(DESTDIR)$(PREFIX)/share/icons/hicolor/80x80/apps/$(TARGET).png
+	install -m644 -D platform/$(PLATFORM)/$(TARGET).png $(DESTDIR)$(PREFIX)/share/icons/hicolor/86x86/apps/$(TARGET).png
 .PHONY: install
