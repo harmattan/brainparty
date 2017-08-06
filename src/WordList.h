@@ -22,20 +22,19 @@
 #include <ext/hash_set>
 
 using namespace std;
-using namespace __gnu_cxx;
 
 namespace __gnu_cxx
 {
-	template<> struct hash< std::string >
+	template<> struct __gnu_cxx::hash< std::string >
 	{
 		size_t operator()( const std::string& x ) const
 		{
-			return hash< const char* >()( x.c_str() );
+			return __gnu_cxx::hash< const char* >()( x.c_str() );
 		}
 	};
 }
 
-typedef hash_set<string, hash<string> > string_hash_set;
+typedef __gnu_cxx::hash_set<string, __gnu_cxx::hash<string> > string_hash_set;
 
 class WordList {
 private:
