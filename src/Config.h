@@ -2,10 +2,14 @@
 #define BRAINPARTY_CONFIG_H
 
 #if defined(USE_OPENGL_ES)
-#include <GLES/gl.h>
+#  include <GLES/gl.h>
 #else
-#include <GL/gl.h>
-#define glOrthof glOrtho
+#  if defined(__APPLE__)
+#    include <OpenGL/gl.h>
+#  else
+#    include <GL/gl.h>
+#  endif
+#  define glOrthof glOrtho
 #endif
 
 #include "SDL.h"

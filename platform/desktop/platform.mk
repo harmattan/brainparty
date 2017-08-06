@@ -1,4 +1,10 @@
-PKGS += gl glib-2.0
+PKGS += glib-2.0
+
+ifeq ($(shell uname),Darwin)
+LIBS += -framework OpenGL
+else
+PKGS += gl
+endif
 
 install: $(TARGET)
 	install -m755 -D $(TARGET) $(DESTDIR)$(PREFIX)/bin/$(TARGET)
