@@ -25,11 +25,11 @@ using namespace std;
 
 namespace __gnu_cxx
 {
-	template<> struct __gnu_cxx::hash< std::string >
+	template<> struct hash< std::string >
 	{
 		size_t operator()( const std::string& x ) const
 		{
-			return __gnu_cxx::hash< const char* >()( x.c_str() );
+			return hash< const char* >()( x.c_str() );
 		}
 	};
 }
