@@ -98,12 +98,6 @@ BPMiniGame_Connex::~BPMiniGame_Connex() {
 	Letters->Clear();
 	SAFE_DELETE(Letters);
 
-	// Clear and delete objects properly
-	for (int i = 0; i < Objects->Count; ++i) {
-		BPMiniGame_Connex_Object* obj = (*Objects)[i];
-		SAFE_DELETE(obj->sfcText); // Ensure each object's text is deleted.
-		SAFE_DELETE(obj);
-	}
 	Objects->Clear();
 	SAFE_DELETE(Objects);
 }
