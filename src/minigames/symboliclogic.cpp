@@ -116,7 +116,7 @@ void BPMiniGame_SymbolicLogic::Render() {
 	}
 }
 
-const char* BPMiniGame_SymbolicLogic::FlattenPremise(BPMiniGame_SymbolicLogic_Premise* premise) {
+std::string BPMiniGame_SymbolicLogic::FlattenPremise(BPMiniGame_SymbolicLogic_Premise* premise) {
 	ostringstream result;
 	
 	switch (premise->Type) {
@@ -150,7 +150,7 @@ const char* BPMiniGame_SymbolicLogic::FlattenPremise(BPMiniGame_SymbolicLogic_Pr
 			break;
 	}
 		
-	return result.str().c_str();
+	return result.str();
 }
 
 void BPMiniGame_SymbolicLogic::Tick() {
