@@ -67,7 +67,7 @@ public:
 	void Start();
 	int GetWeight();
 	void Render();
-	const char* FlattenPremise(BPMiniGame_SymbolicLogic_Premise* premise);
+	std::string FlattenPremise(BPMiniGame_SymbolicLogic_Premise* premise);
 	void Tick();
 	
 	void OnMouseDown();
